@@ -1,0 +1,210 @@
+{
+	"info": {
+		"_postman_id": "88ca76bb-cc03-420d-b6d9-317a4dda4c18",
+		"name": "SOAPService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25156113",
+		"_collection_link": "https://martian-shuttle-783921.postman.co/workspace/PostmanDemo~175059a1-ec4e-4001-90ac-ac7644cdd1b0/collection/25156113-88ca76bb-cc03-420d-b6d9-317a4dda4c18?action=share&creator=25156113&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "CelsiusToFahrenheit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJSON = xml2Json(pm.response.text());",
+							"// console.log(responseJSON);",
+							"const actualFarVal = Math.round(responseJSON[\"soap:Envelope\"][\"soap:Body\"][\"m:CelsiusToFahrenheitResponse\"][\"m:CelsiusToFahrenheitResult\"],2);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify that the converted value is correct\", function(){",
+							"    pm.expect(actualFarVal).to.be.eql(pm.collectionVariables.get(\"expectedFarVal\"));",
+							"    pm.collectionVariables.set(\"farVal\", actualFarVal);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"const number = pm.variables.replaceIn('{{$randomInt}}');",
+							"pm.collectionVariables.set(\"celciusVal\", number);",
+							"",
+							"const fahrenheit = Math.round((number * 1.8) + 32, 2);",
+							"",
+							"pm.collectionVariables.set(\"expectedFarVal\", fahrenheit);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/soap+xml; charset=utf-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n  <soap12:Body>\n    <CelsiusToFahrenheit xmlns=\"http://webservices.daehosting.com/temperature\">\n      <nCelsius>{{celciusVal}}</nCelsius>\n    </CelsiusToFahrenheit>\n  </soap12:Body>\n</soap12:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://webservices.daehosting.com/services/TemperatureConversions.wso",
+					"protocol": "http",
+					"host": [
+						"webservices",
+						"daehosting",
+						"com"
+					],
+					"path": [
+						"services",
+						"TemperatureConversions.wso"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FahrenheitToCelsius",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"const fahrenheit = pm.collectionVariables.get(\"farVal\");",
+							"const celsius = Math.round((fahrenheit - 32) * 5/9);",
+							"",
+							"pm.collectionVariables.set(\"expectedCelciusVal\", celsius);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJSON = xml2Json(pm.response.text());",
+							"",
+							"const actualCelVal = Math.round(responseJSON[\"soap:Envelope\"][\"soap:Body\"][\"m:FahrenheitToCelsiusResponse\"][\"m:FahrenheitToCelsiusResult\"],2);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify that the converted value is correct\", function(){",
+							"    pm.expect(actualCelVal).to.be.eql(pm.collectionVariables.get(\"expectedCelciusVal\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/soap+xml; charset=utf-8",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n  <soap12:Body>\n    <FahrenheitToCelsius xmlns=\"http://webservices.daehosting.com/temperature\">\n      <nFahrenheit>{{farVal}}</nFahrenheit>\n    </FahrenheitToCelsius>\n  </soap12:Body>\n</soap12:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://webservices.daehosting.com/services/TemperatureConversions.wso",
+					"protocol": "http",
+					"host": [
+						"webservices",
+						"daehosting",
+						"com"
+					],
+					"path": [
+						"services",
+						"TemperatureConversions.wso"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "celciusVal",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "farVal",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "expectedCelciusVal",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "expectedFarVal",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
