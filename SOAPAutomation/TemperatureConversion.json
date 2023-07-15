@@ -4,7 +4,7 @@
 		"name": "SOAPService",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "25156113",
-		"_collection_link": "https://martian-shuttle-783921.postman.co/workspace/PostmanDemo~175059a1-ec4e-4001-90ac-ac7644cdd1b0/collection/25156113-88ca76bb-cc03-420d-b6d9-317a4dda4c18?action=share&creator=25156113&source=collection_link"
+		"_collection_link": "https://martian-shuttle-783921.postman.co/workspace/175059a1-ec4e-4001-90ac-ac7644cdd1b0/collection/25156113-88ca76bb-cc03-420d-b6d9-317a4dda4c18?action=share&creator=25156113&source=collection_link"
 	},
 	"item": [
 		{
@@ -23,7 +23,7 @@
 							"});",
 							"",
 							"pm.test(\"Verify that the converted value is correct\", function(){",
-							"    pm.expect(actualFarVal).to.be.eql(pm.collectionVariables.get(\"expectedFarVal\"));",
+							"    pm.expect(actualFarVal).to.be.eql(parseInt(pm.collectionVariables.get(\"expectedFarVal\")));",
 							"    pm.collectionVariables.set(\"farVal\", actualFarVal);",
 							"});",
 							""
@@ -36,7 +36,7 @@
 					"script": {
 						"exec": [
 							"",
-							"const number = pm.variables.replaceIn('{{$randomInt}}');",
+							"const number = parseInt(pm.variables.replaceIn('{{$randomInt}}'));",
 							"pm.collectionVariables.set(\"celciusVal\", number);",
 							"",
 							"const fahrenheit = Math.round((number * 1.8) + 32, 2);",
@@ -118,7 +118,7 @@
 							"});",
 							"",
 							"pm.test(\"Verify that the converted value is correct\", function(){",
-							"    pm.expect(actualCelVal).to.be.eql(pm.collectionVariables.get(\"expectedCelciusVal\"));",
+							"    pm.expect(actualCelVal).to.be.eql(parseInt(pm.collectionVariables.get(\"expectedCelciusVal\")));",
 							"});"
 						],
 						"type": "text/javascript"
