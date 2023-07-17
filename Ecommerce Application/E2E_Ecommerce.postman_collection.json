@@ -1,0 +1,584 @@
+{
+	"info": {
+		"_postman_id": "9a5f140d-a79c-4660-a304-1915261288c9",
+		"name": "E2E",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25156113",
+		"_collection_link": "https://www.postman.com/martian-shuttle-783921/workspace/ecommercee2e/collection/25156113-9a5f140d-a79c-4660-a304-1915261288c9?action=share&creator=25156113&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJson = pm.response.json();",
+							"",
+							"const resSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"token\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"userId\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"token\",",
+							"    \"userId\",",
+							"    \"message\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Verify Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function(){",
+							"    pm.response.to.have.jsonSchema(resSchema);",
+							"});",
+							"",
+							"pm.test(\"Verify successful login message\", function(){",
+							"    pm.expect(resJson.message).to.be.eql(\"Login Successfully\");",
+							"    pm.collectionVariables.set(\"userID\",resJson.userId);",
+							"    pm.collectionVariables.set(\"token\", resJson.token);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"userEmail\":\"{{userMail}}\",\n   \"userPassword\":\"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/auth/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJson = pm.response.json();",
+							"",
+							"const resSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"productId\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"productId\",",
+							"    \"message\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Verify Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function(){",
+							"    pm.response.to.have.jsonSchema(resSchema);",
+							"});",
+							"",
+							"pm.test(\"Verify successful product added message\", function(){",
+							"    pm.expect(resJson.message).to.be.eql(\"Product Added Successfully\");",
+							"    pm.collectionVariables.set(\"product_id\",resJson.productId);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//storing product details in variables",
+							"const product_name = pm.variables.replaceIn('{{$randomProduct}}');",
+							"const product_price = pm.variables.replaceIn('{{$randomPrice}}');",
+							"const product_description = pm.variables.replaceIn('{{$randomCatchPhrase}}');",
+							"",
+							"//setting collection vatiables",
+							"pm.collectionVariables.set(\"product_name\", product_name);",
+							"pm.collectionVariables.set(\"product_price\", product_price);",
+							"pm.collectionVariables.set(\"product_description\", product_description);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "productName",
+							"value": "{{product_name}}",
+							"type": "text"
+						},
+						{
+							"key": "productAddedBy",
+							"value": "{{userID}}",
+							"type": "text"
+						},
+						{
+							"key": "productCategory",
+							"value": "fashion",
+							"type": "text"
+						},
+						{
+							"key": "productSubCategory",
+							"value": "shirts",
+							"type": "text"
+						},
+						{
+							"key": "productPrice",
+							"value": "{{product_price}}",
+							"type": "text"
+						},
+						{
+							"key": "productDescription",
+							"value": "{{product_description}}",
+							"type": "text"
+						},
+						{
+							"key": "productFor",
+							"value": "women",
+							"type": "text"
+						},
+						{
+							"key": "productImage",
+							"type": "file",
+							"src": "/Users/ubhatia/Downloads/images.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseURL}}/product/add-product",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"product",
+						"add-product"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Order",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJson = pm.response.json();",
+							"",
+							"const resSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"orders\": {",
+							"      \"type\": \"array\",",
+							"      \"items\": [",
+							"        {",
+							"          \"type\": \"string\"",
+							"        }",
+							"      ]",
+							"    },",
+							"    \"productOrderId\": {",
+							"      \"type\": \"array\",",
+							"      \"items\": [",
+							"        {",
+							"          \"type\": \"string\"",
+							"        }",
+							"      ]",
+							"    },",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"orders\",",
+							"    \"productOrderId\",",
+							"    \"message\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Verify Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function(){",
+							"    pm.response.to.have.jsonSchema(resSchema);",
+							"});",
+							"",
+							"pm.test(\"Verify successful order message\", function() {",
+							"    pm.expect(resJson.message).to.be.eql(\"Order Placed Successfully\");",
+							"});",
+							"",
+							"pm.test(\"Verify Order ID is generated\", function() {",
+							"    pm.expect(resJson).to.have.property(\"orders\");",
+							"    pm.collectionVariables.set(\"order_id\",resJson.orders[0]);",
+							"});",
+							"",
+							"pm.test(\"verify that response product ID is same as product ordered\", function(){",
+							"    pm.expect(resJson.productOrderId[0]).to.be.eql(pm.collectionVariables.get(\"product_id\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const country_name = pm.variables.replaceIn('{{$randomCountry}}');",
+							"pm.collectionVariables.set(\"country\", country_name);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"orders\":[\n      {\n         \"country\":\"{{country}}\",\n         \"productOrderedId\":\"{{product_id}}\"\n      }\n   ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/order/create-order",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"order",
+						"create-order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Product",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJson = pm.response.json();",
+							"",
+							"const resSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"message\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Verify Status code is 201\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function(){",
+							"    pm.response.to.have.jsonSchema(resSchema);",
+							"});",
+							"",
+							"pm.test(\"Verify product deletion success message\", function() {",
+							"    pm.expect(resJson.message).to.be.eql(\"Product Deleted Successfully\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/product/delete-product/{{product_id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"product",
+						"delete-product",
+						"{{product_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Order Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"const resJsonSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"data\": {",
+							"      \"type\": \"object\",",
+							"      \"properties\": {",
+							"        \"_id\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"orderById\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"orderBy\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"productOrderedId\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"productName\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"country\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"productDescription\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"productImage\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"orderPrice\": {",
+							"          \"type\": \"string\"",
+							"        },",
+							"        \"__v\": {",
+							"          \"type\": \"integer\"",
+							"        }",
+							"      },",
+							"      \"required\": [",
+							"        \"_id\",",
+							"        \"orderById\",",
+							"        \"orderBy\",",
+							"        \"productOrderedId\",",
+							"        \"productName\",",
+							"        \"country\",",
+							"        \"productDescription\",",
+							"        \"productImage\",",
+							"        \"orderPrice\",",
+							"        \"__v\"",
+							"      ]",
+							"    },",
+							"    \"message\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"data\",",
+							"    \"message\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify success message\", function(){",
+							"    pm.expect(resJSON.message).to.be.eql(\"Orders fetched for customer Successfully\");",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function(){",
+							"    pm.response.to.have.jsonSchema(resJsonSchema);",
+							"});",
+							"",
+							"pm.test(\"Verify ID user who ordered the product\", function(){",
+							"    pm.expect(resJSON.data.orderById).to.be.eql(pm.collectionVariables.get(\"userID\"));",
+							"});",
+							"",
+							"pm.test(\"Verify User Email for the product\", function(){",
+							"    pm.expect(resJSON.data.orderBy).to.be.eql(pm.collectionVariables.get(\"userMail\"));",
+							"});",
+							"",
+							"pm.test(\"Verify ID of ordered product\", function(){",
+							"    pm.expect(resJSON.data.productOrderedId).to.be.eql(pm.collectionVariables.get(\"product_id\"));",
+							"});",
+							"",
+							"pm.test(\"Verify Product Name\", function(){",
+							"    pm.expect(resJSON.data.productName).to.be.eql(pm.collectionVariables.get(\"product_name\"));",
+							"});",
+							"",
+							"pm.test(\"Verify country from where product was ordered\", function(){",
+							"    pm.expect(resJSON.data.country).to.be.eql(pm.collectionVariables.get(\"country\"));",
+							"});",
+							"",
+							"pm.test(\"Verify Product Description\", function(){",
+							"    pm.expect(resJSON.data.productDescription).to.be.eql(pm.collectionVariables.get(\"product_description\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/order/get-orders-details?id={{order_id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"order",
+						"get-orders-details"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{order_id}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "userMail",
+			"value": "umang.bhatia2508@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "Chloroplast@16",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "order_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_price",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_description",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "country",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
