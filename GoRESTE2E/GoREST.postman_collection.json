@@ -1,0 +1,312 @@
+{
+	"info": {
+		"_postman_id": "50e9857c-bc3e-464d-b78e-a0b53b6c278f",
+		"name": "GoREST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25156113",
+		"_collection_link": "https://martian-shuttle-783921.postman.co/workspace/EcommerceE2E~7579da71-7fa0-467d-ba78-9c88d78d8053/collection/25156113-50e9857c-bc3e-464d-b78e-a0b53b6c278f?action=share&creator=25156113&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//Setting Deletion Flag",
+							"",
+							"pm.collectionVariables.set(\"isDeleted\", false);",
+							"",
+							"//Setting Request Body Data",
+							"",
+							"function randomGender() {",
+							"    let genderArr = [\"male\", \"female\"];",
+							"    return genderArr[(Math.floor(Math.random() * genderArr.length))];",
+							"}",
+							"",
+							"",
+							"const usr_first_name = pm.variables.replaceIn(\"{{$randomFirstName}}\");",
+							"const usr_last_name = pm.variables.replaceIn(\"{{$randomLastName}}\");",
+							"const usr_name = usr_first_name.concat(\" \", usr_last_name);",
+							"const usr_email = usr_first_name.toLowerCase().concat(\".\",usr_last_name.toLowerCase(),\"@15ce.com\");",
+							"const usr_gender = randomGender();",
+							"",
+							"pm.collectionVariables.set(\"user_email\", usr_email);",
+							"pm.collectionVariables.set(\"user_name\", usr_name);",
+							"pm.collectionVariables.set(\"user_gender\", usr_gender);",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"const resSchema = {",
+							" ",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"id\": {",
+							"      \"type\": \"integer\"",
+							"    },",
+							"    \"name\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"email\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"gender\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"status\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"id\",",
+							"    \"name\",",
+							"    \"email\",",
+							"    \"gender\",",
+							"    \"status\"",
+							"  ]",
+							"};",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"    pm.collectionVariables.set(\"user_id\", resJSON.id);",
+							"});",
+							"",
+							"pm.test(\"Verify JSON Schema of the response\", function() {",
+							"    pm.response.to.have.jsonSchema(resSchema);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer 332a15da621280870d2542f218899df830494201a563116a12c56ff8a34c3a66",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{user_name}}\",\n  \"gender\": \"{{user_gender}}\",\n  \"email\": \"{{user_email}}\",\n  \"status\": \"active\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{goRestBaseURL}}/public/v2/users",
+					"host": [
+						"{{goRestBaseURL}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const responseJSON = pm.response.json();",
+							"const responseSchema = {",
+							"  \"type\": \"object\",",
+							"  \"properties\": {",
+							"    \"id\": {",
+							"      \"type\": \"integer\"",
+							"    },",
+							"    \"name\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"email\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"gender\": {",
+							"      \"type\": \"string\"",
+							"    },",
+							"    \"status\": {",
+							"      \"type\": \"string\"",
+							"    }",
+							"  },",
+							"  \"required\": [",
+							"    \"id\",",
+							"    \"name\",",
+							"    \"email\",",
+							"    \"gender\",",
+							"    \"status\"",
+							"  ]",
+							"};",
+							"",
+							"if(pm.collectionVariables.get(\"isDeleted\")) {",
+							"    ",
+							"    pm.test(\"Status code is 404\", function () {",
+							"        pm.response.to.have.status(404);",
+							"    });",
+							"",
+							"    pm.test(\"Verify error message\", function(){",
+							"        pm.expect(responseJSON.message).to.be.eql(\"Resource not found\");",
+							"    });",
+							"    ",
+							"}",
+							"",
+							"else {",
+							"",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Verify that User Name returned is correct\", function(){",
+							"        pm.expect(responseJSON.name).to.be.eql(pm.collectionVariables.get(\"user_name\"));",
+							"    });",
+							"",
+							"    pm.test(\"Verify that User Email returned is correct\", function(){",
+							"        pm.expect(responseJSON.email).to.be.eql(pm.collectionVariables.get(\"user_email\"));",
+							"    });",
+							"",
+							"    pm.test(\"Verify that User Gender returned is correct\", function(){",
+							"        pm.expect(responseJSON.gender).to.be.eql(pm.collectionVariables.get(\"user_gender\"));",
+							"    });",
+							"",
+							"}",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer 332a15da621280870d2542f218899df830494201a563116a12c56ff8a34c3a66",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{goRestBaseURL}}/public/v2/users/{{user_id}}",
+					"host": [
+						"{{goRestBaseURL}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"    pm.collectionVariables.set(\"isDeleted\", true);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer 332a15da621280870d2542f218899df830494201a563116a12c56ff8a34c3a66",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{goRestBaseURL}}/public/v2/users/{{user_id}}",
+					"host": [
+						"{{goRestBaseURL}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_email",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_gender",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "isDeleted",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
