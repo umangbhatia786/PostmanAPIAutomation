@@ -1,0 +1,577 @@
+{
+	"info": {
+		"_postman_id": "b4e110fd-0684-40bd-80b9-0d6eca4cac6e",
+		"name": "Countries",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25156113",
+		"_collection_link": "https://www.postman.com/martian-shuttle-783921/workspace/recipeapi/collection/25156113-b4e110fd-0684-40bd-80b9-0d6eca4cac6e?action=share&creator=25156113&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Get All Countries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Response status code is 200', function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"pm.test('Verify the presence and non-empty values of the name field', function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;",
+							"    responseData.forEach(function (country) {",
+							"        pm.expect(country.name).to.exist.and.to.be.an('object');",
+							"        pm.expect(country.name.common).to.exist.and.to.be.a('string').and.to.not.be.empty;",
+							"        pm.expect(country.name.official).to.exist.and.to.be.a('string').and.to.not.be.empty;",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/all",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Country by Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const name = pm.variables.replaceIn(\"{{$randomCountry}}\");",
+							"",
+							"pm.collectionVariables.set('countryName', name);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"",
+							"const resJSON = pm.response.json();",
+							"",
+							"function setValuesforCountry() {",
+							"    const jsonObj = resJSON[0].currencies;",
+							"    const currencyCode = Object.keys(jsonObj)[0];",
+							"    const jsonObj2 = resJSON[0].languages;",
+							"    const langCode = Object.keys(jsonObj2)[0];",
+							"",
+							"    pm.collectionVariables.set(\"countryCode\", resJSON[0].cca2);",
+							"    pm.collectionVariables.set(\"capitalCity\", resJSON[0].capital[0]);",
+							"    pm.collectionVariables.set(\"currency\", currencyCode);",
+							"    pm.collectionVariables.set(\"language\", langCode);",
+							"    pm.collectionVariables.set(\"callingCode\", resJSON[0].idd.root);",
+							"    pm.collectionVariables.set(\"region\", resJSON[0].region);",
+							"    pm.collectionVariables.set(\"subRegion\", resJSON[0].subregion);",
+							"};",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    setValuesforCountry();",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response is an array with at least one element\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array').and.to.have.lengthOf.at.least(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"The 'tld' array is present and not empty in the response\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData).to.have.lengthOf.at.least(1, \"Array should not be empty\");",
+							"    pm.expect(responseData[0].tld).to.exist.and.to.be.an('array').and.to.have.lengthOf.at.least(1, \"Array should not be empty\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/name/{{countryName}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"name",
+						"{{countryName}}"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get Country by Name",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/name/{{countryName}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"name",
+								"{{countryName}}"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 30 Aug 2023 06:13:46 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.38 (Debian)"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "public, immutable, max-age=31556926"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "content-encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "content-length",
+							"value": "1445"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						}
+					],
+					"cookie": [],
+					"body": "[\n    {\n        \"name\": {\n            \"common\": \"Vatican City\",\n            \"official\": \"Vatican City State\",\n            \"nativeName\": {\n                \"ita\": {\n                    \"official\": \"Stato della Città del Vaticano\",\n                    \"common\": \"Vaticano\"\n                },\n                \"lat\": {\n                    \"official\": \"Status Civitatis Vaticanæ\",\n                    \"common\": \"Vaticanæ\"\n                }\n            }\n        },\n        \"tld\": [\n            \".va\"\n        ],\n        \"cca2\": \"VA\",\n        \"ccn3\": \"336\",\n        \"cca3\": \"VAT\",\n        \"independent\": true,\n        \"status\": \"officially-assigned\",\n        \"unMember\": true,\n        \"currencies\": {\n            \"EUR\": {\n                \"name\": \"Euro\",\n                \"symbol\": \"€\"\n            }\n        },\n        \"idd\": {\n            \"root\": \"+3\",\n            \"suffixes\": [\n                \"906698\",\n                \"79\"\n            ]\n        },\n        \"capital\": [\n            \"Vatican City\"\n        ],\n        \"altSpellings\": [\n            \"VA\",\n            \"Holy See (Vatican City State)\",\n            \"Vatican City State\",\n            \"Stato della Città del Vaticano\"\n        ],\n        \"region\": \"Europe\",\n        \"subregion\": \"Southern Europe\",\n        \"languages\": {\n            \"ita\": \"Italian\",\n            \"lat\": \"Latin\"\n        },\n        \"translations\": {\n            \"ara\": {\n                \"official\": \"دولة مدينة الفاتيكان\",\n                \"common\": \"مدينة الفاتيكان\"\n            },\n            \"bre\": {\n                \"official\": \"Riez Keoded ar Vatikan\",\n                \"common\": \"Vatikan\"\n            },\n            \"ces\": {\n                \"official\": \"Městský stát Vatikán\",\n                \"common\": \"Vatikán\"\n            },\n            \"cym\": {\n                \"official\": \"Vatican City State\",\n                \"common\": \"Vatican City\"\n            },\n            \"deu\": {\n                \"official\": \"Staat Vatikanstadt\",\n                \"common\": \"Vatikanstadt\"\n            },\n            \"est\": {\n                \"official\": \"Vatikani Linnriik\",\n                \"common\": \"Vatikan\"\n            },\n            \"fin\": {\n                \"official\": \"Vatikaanin kaupunkivaltio\",\n                \"common\": \"Vatikaani\"\n            },\n            \"fra\": {\n                \"official\": \"Cité du Vatican\",\n                \"common\": \"Cité du Vatican\"\n            },\n            \"hrv\": {\n                \"official\": \"Vatikan\",\n                \"common\": \"Vatikan\"\n            },\n            \"hun\": {\n                \"official\": \"Vatikán Állam\",\n                \"common\": \"Vatikán\"\n            },\n            \"ita\": {\n                \"official\": \"Città del Vaticano\",\n                \"common\": \"Città del Vaticano\"\n            },\n            \"jpn\": {\n                \"official\": \"バチカン市国の状態\",\n                \"common\": \"バチカン市国\"\n            },\n            \"kor\": {\n                \"official\": \"바티칸 시국\",\n                \"common\": \"바티칸\"\n            },\n            \"nld\": {\n                \"official\": \"Vaticaanstad\",\n                \"common\": \"Vaticaanstad\"\n            },\n            \"per\": {\n                \"official\": \"دولت\\u200cشهر واتیکان\",\n                \"common\": \"واتیکان\"\n            },\n            \"pol\": {\n                \"official\": \"Państwo Watykańskie\",\n                \"common\": \"Watykan\"\n            },\n            \"por\": {\n                \"official\": \"Cidade do Vaticano\",\n                \"common\": \"Cidade do Vaticano\"\n            },\n            \"rus\": {\n                \"official\": \"Город-государство Ватикан\",\n                \"common\": \"Ватикан\"\n            },\n            \"slk\": {\n                \"official\": \"Svätá stolica (Vatikánsky mestský štát\",\n                \"common\": \"Vatikán\"\n            },\n            \"spa\": {\n                \"official\": \"Ciudad del Vaticano\",\n                \"common\": \"Ciudad del Vaticano\"\n            },\n            \"srp\": {\n                \"official\": \"Град Ватикан\",\n                \"common\": \"Ватикан\"\n            },\n            \"swe\": {\n                \"official\": \"Vatikanstaten\",\n                \"common\": \"Vatikanstaten\"\n            },\n            \"tur\": {\n                \"official\": \"Vatikan Şehir Devleti\",\n                \"common\": \"Vatikan\"\n            },\n            \"urd\": {\n                \"official\": \"ویٹیکن سٹی\",\n                \"common\": \"ویٹیکن سٹی\"\n            },\n            \"zho\": {\n                \"official\": \"梵蒂冈城国\",\n                \"common\": \"梵蒂冈\"\n            }\n        },\n        \"latlng\": [\n            41.9,\n            12.45\n        ],\n        \"landlocked\": true,\n        \"borders\": [\n            \"ITA\"\n        ],\n        \"area\": 0.44,\n        \"demonyms\": {\n            \"eng\": {\n                \"f\": \"Vatican\",\n                \"m\": \"Vatican\"\n            },\n            \"fra\": {\n                \"f\": \"Vaticane\",\n                \"m\": \"Vatican\"\n            }\n        },\n        \"flag\": \"🇻🇦\",\n        \"maps\": {\n            \"googleMaps\": \"https://goo.gl/maps/DTKvw5Bd1QZaDZmE8\",\n            \"openStreetMaps\": \"https://www.openstreetmap.org/relation/36989\"\n        },\n        \"population\": 451,\n        \"car\": {\n            \"signs\": [\n                \"V\"\n            ],\n            \"side\": \"right\"\n        },\n        \"timezones\": [\n            \"UTC+01:00\"\n        ],\n        \"continents\": [\n            \"Europe\"\n        ],\n        \"flags\": {\n            \"png\": \"https://flagcdn.com/w320/va.png\",\n            \"svg\": \"https://flagcdn.com/va.svg\",\n            \"alt\": \"The flag of Vatican City is square shaped. It is composed of two equal vertical bands of yellow and white, with national coat of arms centered in the white band. The national coat of arms comprises the Papal Tiara superimposed on two crossed keys.\"\n        },\n        \"coatOfArms\": {\n            \"png\": \"https://mainfacts.com/media/images/coats_of_arms/va.png\",\n            \"svg\": \"https://mainfacts.com/media/images/coats_of_arms/va.svg\"\n        },\n        \"startOfWeek\": \"monday\",\n        \"capitalInfo\": {\n            \"latlng\": [\n                41.9,\n                12.45\n            ]\n        }\n    }\n]"
+				}
+			]
+		},
+		{
+			"name": "Get Country by Code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify country name from the response\", function () {",
+							"    pm.expect(resJSON[0].name.common).to.be.eql(pm.collectionVariables.get('countryName'));",
+							"});",
+							"",
+							"pm.test(\"Verify capital city from the response\", function () {",
+							"    pm.expect(resJSON[0].capital[0]).to.be.eql(pm.collectionVariables.get('capitalCity'));",
+							"});",
+							"",
+							"pm.test(\"Verify country code from the response\", function () {",
+							"    pm.expect(resJSON[0].cca2).to.be.eql(pm.collectionVariables.get('countryCode'));",
+							"});",
+							"",
+							"pm.test(\"Verify language from the response\", function () {",
+							"    const langObject = resJSON[0].languages;",
+							"    const resLang = Object.keys(langObject)[0];",
+							"    pm.expect(resLang).to.be.eql(pm.collectionVariables.get('language'));",
+							"});",
+							"",
+							"pm.test(\"Verify currency from the response\", function () {",
+							"    const currObject = resJSON[0].currencies;",
+							"    const resCurrency = Object.keys(currObject)[0];",
+							"    pm.expect(resCurrency).to.be.eql(pm.collectionVariables.get('currency'));",
+							"});",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (country) {",
+							"        pm.expect(country.name.common).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"tld is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData[0].tld).to.be.an('array');",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/alpha/{{countryCode}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"alpha",
+						"{{countryCode}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Country by Capital",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify country name from the response\", function () {",
+							"    pm.expect(resJSON[0].name.common).to.be.eql(pm.collectionVariables.get('countryName'));",
+							"});",
+							"",
+							"pm.test(\"Verify capital city from the response\", function () {",
+							"    pm.expect(resJSON[0].capital[0]).to.be.eql(pm.collectionVariables.get('capitalCity'));",
+							"});",
+							"",
+							"pm.test(\"Verify country code from the response\", function () {",
+							"    pm.expect(resJSON[0].cca2).to.be.eql(pm.collectionVariables.get('countryCode'));",
+							"});",
+							"",
+							"pm.test(\"Verify language from the response\", function () {",
+							"    const langObject = resJSON[0].languages;",
+							"    const resLang = Object.keys(langObject)[0];",
+							"    pm.expect(resLang).to.be.eql(pm.collectionVariables.get('language'));",
+							"});",
+							"",
+							"pm.test(\"Verify currency from the response\", function () {",
+							"    const currObject = resJSON[0].currencies;",
+							"    const resCurrency = Object.keys(currObject)[0];",
+							"    pm.expect(resCurrency).to.be.eql(pm.collectionVariables.get('currency'));",
+							"});",
+							"",
+							"",
+							"pm.test(\"Name is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    responseData.forEach(function (item) {",
+							"        pm.expect(item.name.common).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"    });",
+							"});",
+							"",
+							"",
+							"pm.test(\"tld is an array\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function (item) {",
+							"        pm.expect(item.tld).to.be.an('array');",
+							"    });",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/capital/{{capitalCity}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"capital",
+						"{{capitalCity}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Countries by Language",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify that input country exists in the list of response\", function () {",
+							"    var countryExists = false;",
+							"    const countryNameList = [];",
+							"",
+							"    for (const value of resJSON) {",
+							"        countryNameList.push(value.name.common);",
+							"    }",
+							"",
+							"    const targetValue = pm.collectionVariables.get('countryName');",
+							"",
+							"    if (countryNameList.includes(pm.collectionVariables.get('countryName'))) {",
+							"        countryExists = true;",
+							"    }",
+							"",
+							"    pm.expect(countryExists).to.be.eql(true);",
+							"",
+							"});",
+							"",
+							"pm.test(\"Each country name is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"",
+							"    pm.expect(responseData).to.be.an('array');",
+							"",
+							"    responseData.forEach(function (country) {",
+							"        pm.expect(country.name.common).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"    });",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/lang/{{language}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"lang",
+						"{{language}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Countries by Region",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify that input country exists in the list of response\", function() {",
+							"    var countryExists = false;",
+							"    const countryNameList = [];",
+							"",
+							"    for (const value of resJSON) {",
+							"        countryNameList.push(value.name.common);",
+							"    }",
+							"",
+							"    const targetValue = pm.collectionVariables.get('countryName');",
+							"",
+							"    if (countryNameList.includes(pm.collectionVariables.get('countryName'))) {",
+							"        countryExists = true;",
+							"    }",
+							"",
+							"    pm.expect(countryExists).to.be.eql(true); ",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/region/{{region}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"region",
+						"{{region}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Countries by Sub Region",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resJSON = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Verify that input country exists in the list of response\", function() {",
+							"    var countryExists = false;",
+							"    const countryNameList = [];",
+							"",
+							"    for (const value of resJSON) {",
+							"        countryNameList.push(value.name.common);",
+							"    }",
+							"",
+							"    const targetValue = pm.collectionVariables.get('countryName');",
+							"",
+							"    if (countryNameList.includes(pm.collectionVariables.get('countryName'))) {",
+							"        countryExists = true;",
+							"    }",
+							"",
+							"    pm.expect(countryExists).to.be.eql(true); ",
+							"",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/subregion/{{subRegion}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"subregion",
+						"{{subRegion}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "countryName",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "countryCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "language",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currency",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "capitalCity",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "callingCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "region",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "subRegion",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
